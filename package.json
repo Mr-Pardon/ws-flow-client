@@ -1,0 +1,47 @@
+{
+  "name": "@ws-flow/client",
+  "version": "1.0.0",
+  "type": "module",
+  "author": "Mr_Pardon",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/copy-types.mjs"
+  },
+  "dependencies": {
+    "ws-event-proxy": "^0.2.4"
+  },
+  "peerDependencies": {
+    "ws": "^8.19.0"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    }
+  },
+  "browser": {
+    "ws": false
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "ws": "^8.19.0"
+  }
+}
