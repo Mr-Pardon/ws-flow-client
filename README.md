@@ -1,6 +1,6 @@
 ﻿# @ws-flow/client
 
-[![npm](https://img.shields.io/npm/v/@ws-flow/client.svg)](https://www.npmjs.com/package/@ws-flow/client) [![npm version](https://img.shields.io/npm/v/ws-event-proxy.svg)](https://www.npmjs.com/package/ws-event-proxy) [![license](https://img.shields.io/npm/l/ws-event-proxy.svg)](https://www.npmjs.com/package/ws-event-proxy)
+[![npm](https://img.shields.io/npm/v/@ws-flow/client.svg)](https://www.npmjs.com/package/@ws-flow/client) [![npm version](https://img.shields.io/npm/v/ws-event-proxy.svg)](https://www.npmjs.com/package/ws-event-proxy) [![license](https://img.shields.io/npm/l/@ws-flow/client.svg)](https://www.npmjs.com/package/@ws-flow/client)
 
 - [English](#english) | [简体中文](#简体中文)
 
