@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "author": "Mr_Pardon",
+  "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
