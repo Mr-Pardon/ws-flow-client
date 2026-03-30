@@ -1,6 +1,6 @@
 import { StreamTask } from './stream-task';
 import { WSProxy, type RouteRule } from 'ws-event-proxy';
-import { type Protocol } from './protocol';
+import { WSProtocol } from './protocol';
 import type { AnyRecord, WSHandler, WSSendOptions, WSSubscribeOptions, WSWatchOptions } from '../types/ws';
 import type { EventMatcher, Middleware, SendMiddleware, StreamMiddleware } from '../types/middleware';
 export declare enum WSState {
@@ -42,7 +42,8 @@ export declare class WSClient<Events extends AnyRecord = AnyRecord> {
      * const wsc = new WSClient<Events>()
      * ```
      */
-    constructor(protocol?: Protocol);
+    constructor(protocol?: WSProtocol);
+    private _pickProxyProtocol;
     private _buildProxyProtocal;
     private _createConnectPromise;
     private _createContext;
@@ -73,7 +74,7 @@ export declare class WSClient<Events extends AnyRecord = AnyRecord> {
      * @param protocol - Optional custom protocol definition.
      * @returns A WSClient bound to the provided WebSocket.
      */
-    static takeover<Events extends AnyRecord = AnyRecord>(ws: WebSocket, protocol?: Protocol): WSClient<Events>;
+    static takeover<Events extends AnyRecord = AnyRecord>(ws: WebSocket, protocol?: WSProtocol): WSClient<Events>;
     /**
      * Register global message middleware.
      *

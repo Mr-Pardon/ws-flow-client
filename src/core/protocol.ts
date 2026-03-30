@@ -8,7 +8,7 @@ export interface WSProtocol extends Partial<ProxyProtocol> {
   resolveEventType(name: string): Record<string, any>
 
   /**
-   * Legacy nested proxy config (deprecated). Prefer flat proxy fields instead.
+   * @deprecated Use top-level proxy fields instead.
    */
   proxy?: Partial<ProxyProtocol>
 }
