@@ -1,17 +1,7 @@
 import { StreamTask } from './stream-task';
-import { WSProxy } from 'ws-event-proxy';
+import { WSProxy, BaseProtocol } from 'ws-event-proxy';
 import { WSProtocol } from './protocol';
 import { composeMiddleware, composeStreamMiddleware } from './compose';
-const PROXY_PROTOCOL_KEYS = [
-    'needReady',
-    'logSend',
-    'logReceive',
-    'systemRoutes',
-    'buildRequest',
-    'getRequestId',
-    'getResponseId',
-    'isReadyEvent'
-];
 export var WSState;
 (function (WSState) {
     WSState["IDLE"] = "IDLE";
@@ -65,7 +55,8 @@ export class WSClient {
         const proxy = {};
         if (!protocol)
             return proxy;
-        PROXY_PROTOCOL_KEYS.forEach((key) => {
+        const proxyKeys = Object.keys(BaseProtocol);
+        proxyKeys.forEach((key) => {
             const value = protocol[key];
             if (value !== undefined) {
                 proxy[key] = value;

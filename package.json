@@ -23,7 +23,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && node scripts/copy-types.mjs"
+    "build": "tsc && node scripts/copy-types.mjs",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "ws-event-proxy": "^0.2.4"

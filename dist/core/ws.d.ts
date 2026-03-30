@@ -1,4 +1,5 @@
 import { StreamTask } from './stream-task';
+import { type WebSocket as WS } from 'ws';
 import { WSProxy, type RouteRule } from 'ws-event-proxy';
 import { WSProtocol } from './protocol';
 import type { AnyRecord, WSHandler, WSSendOptions, WSSubscribeOptions, WSWatchOptions } from '../types/ws';
@@ -74,7 +75,7 @@ export declare class WSClient<Events extends AnyRecord = AnyRecord> {
      * @param protocol - Optional custom protocol definition.
      * @returns A WSClient bound to the provided WebSocket.
      */
-    static takeover<Events extends AnyRecord = AnyRecord>(ws: WebSocket, protocol?: WSProtocol): WSClient<Events>;
+    static takeover<Events extends AnyRecord = AnyRecord>(ws: WebSocket | WS, protocol?: WSProtocol): WSClient<Events>;
     /**
      * Register global message middleware.
      *
@@ -340,7 +341,7 @@ export declare class WSClient<Events extends AnyRecord = AnyRecord> {
      *
      * @returns The current WebSocket instance or `null` if not connected.
      */
-    getWsInstance(): WebSocket | null;
+    getWsInstance(): WebSocket | WS | null;
     /**
      * Get the WSProxy instance used by this client.
      *

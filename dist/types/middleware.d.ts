@@ -1,4 +1,7 @@
 import type {
+  WebSocket as WS
+} from "ws"
+import type {
   WSProxy,
   RouteRule
 } from "ws-event-proxy"
@@ -40,7 +43,7 @@ export interface WSMessageContext<Receive = any, Events extends AnyRecord = AnyR
   /**
    * Underlying WebSocket instance or null if not connected.
    */
-  ws: WebSocket | null
+  ws: WebSocket | WS | null
   /**
    * Current connection state.
    */
@@ -83,7 +86,7 @@ export interface WSSendContext<Msg = any, Events extends AnyRecord = AnyRecord> 
   /**
    * Underlying WebSocket instance or null if not connected.
    */
-  ws: WebSocket | null
+  ws: WebSocket | WS | null
   /**
    * Current connection state.
    */

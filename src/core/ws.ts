@@ -1,6 +1,8 @@
 import { StreamTask } from './stream-task'
+import { type WebSocket as WS } from 'ws'
 import { 
   WSProxy, 
+  BaseProtocol,
   type RouteRule, 
   type Protocol as ProxyProtocol
 } from 'ws-event-proxy'
@@ -30,19 +32,6 @@ import type {
   WSSendContext
 } from '../types/middleware'
 
-const PROXY_PROTOCOL_KEYS = [
-  'needReady',
-  'logSend',
-  'logReceive',
-  'systemRoutes',
-  'buildRequest',
-  'getRequestId',
-  'getResponseId',
-  'isReadyEvent'
-] as const
-
-type ProxyProtocolKey = typeof PROXY_PROTOCOL_KEYS[number]
-
 export enum WSState {
   IDLE = 'IDLE',
   CONNECTING = 'CONNECTING',
@@ -51,10 +40,10 @@ export enum WSState {
   CLOSED = 'CLOSED'
 }
 
-async function createWebSocket(url: string): Promise<WebSocket> {
+async function createWebSocket(url: string): Promise<WebSocket | WS> {
   if (typeof window === 'undefined') {
     const { default: WS } = await import('ws')
-    return new WS(url) as unknown as WebSocket
+    return new WS(url)
   }
 
   return new WebSocket(url)
@@ -63,7 +52,7 @@ async function createWebSocket(url: string): Promise<WebSocket> {
 export class WSClient<
   Events extends AnyRecord = AnyRecord
 > {
-  private _ws: WebSocket | null = null
+  private _ws: WebSocket | WS | null = null
   private _wsContext: WSContext<Events>
   private _wsProxy: WSProxy
   private _wsProtocal: WSProtocol
@@ -114,8 +103,10 @@ export class WSClient<
     const proxy: Partial<ProxyProtocol> = {}
     if (!protocol) return proxy
 
-    PROXY_PROTOCOL_KEYS.forEach((key) => {
-      const value = (protocol as Record<ProxyProtocolKey, any>)[key]
+    const proxyKeys = Object.keys(BaseProtocol) as (keyof ProxyProtocol)[]
+
+    proxyKeys.forEach(<K extends keyof ProxyProtocol>(key: K) => {
+      const value = protocol[key]
       if (value !== undefined) {
         proxy[key] = value
       }
@@ -417,7 +408,7 @@ export class WSClient<
    * @returns A WSClient bound to the provided WebSocket.
    */
   static takeover<Events extends AnyRecord = AnyRecord>(
-    ws: WebSocket,
+    ws: WebSocket | WS,
     protocol?: WSProtocol
   ) {
     const instance = new WSClient<Events>(protocol)
