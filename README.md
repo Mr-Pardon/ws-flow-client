@@ -295,11 +295,10 @@ client.useStream([ Interceptor ])
 `WSClient` accepts a framework-level `Protocol`:
 
 ```ts
-interface Protocol {
+type WSProtocol = {
   reconnectTimeout: number
   resolveEventType(name: string): Record<string, any>
-  proxy: Partial<ProxyProtocol>
-}
+} & Partial<ProxyProtocol>
 ```
 
 #### Framework Options
@@ -308,11 +307,12 @@ interface Protocol {
 | --- | --- | --- | --- |
 | `reconnectTimeout` | `number` | Yes | Delay before reconnecting after unexpected disconnect (ms). |
 | `resolveEventType` | `(name: string) => Record<string, any>` | Yes | Converts event names like `'message'` into a `RouteRule`, e.g. `{ type: 'message' }`. |
-| `proxy` | `Partial<ProxyProtocol>` | Yes | Protocol adapter options passed to `ws-event-proxy`. |
 
-#### `proxy` Options
+#### Proxy Options (from `ws-event-proxy`)
 
-These options come from `ws-event-proxy` and are passed through in `ws-client`.
+These options come from `ws-event-proxy` and are configured at the same level as
+`reconnectTimeout` and `resolveEventType`. WSClient will split and pass them to
+`ws-event-proxy` internally.
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -329,10 +329,10 @@ These options come from `ws-event-proxy` and are passed through in `ws-client`.
 ```ts
 const WSProtocol = {
   reconnectTimeout: 2000,
-  proxy: BaseProtocol,
   resolveEventType(name) {
     return { type: name }
-  }
+  },
+  ...BaseProtocol
 }
 ```
 
@@ -571,10 +571,8 @@ Send a request and await a response.
 
 ```ts
 const protocol = {
-  proxy: {
-    getRequestId: (msg) => msg.id,
-    getResponseId: (msg) => msg.replyTo
-  }
+  getRequestId: (msg) => msg.id,
+  getResponseId: (msg) => msg.replyTo
 }
 const client = new WSClient(protocol)
 ```
@@ -590,7 +588,7 @@ const res = await client.request<Msg, Reply>(
 
 Local send middleware works the same as in `send()`.
 
-Note: if your `proxy` cannot extract a request ID, `request()` will throw.
+Note: if your protocol cannot extract a request ID, `request()` will throw.
 
 ---
 
@@ -1206,11 +1204,10 @@ client.useStream([ Interceptor ])
 `WSClient` 接收的是一层框架级的 `Protocol`：
 
 ```ts
-interface Protocol {
+type WSProtocol = {
   reconnectTimeout: number
   resolveEventType(name: string): Record<string, any>
-  proxy: Partial<ProxyProtocol>
-}
+} & Partial<ProxyProtocol>
 ```
 
 #### 框架层配置项
@@ -1219,11 +1216,11 @@ interface Protocol {
 | --- | --- | --- | --- |
 | `reconnectTimeout` | `number` | 是 | 非预期断开后，延迟多久再发起重连，单位毫秒。 |
 | `resolveEventType` | `(name: string) => Record<string, any>` | 是 | 把 `'message'` 这样的事件名转换成真正用于匹配的 `RouteRule`，例如 `{ type: 'message' }`。 |
-| `proxy` | `Partial<ProxyProtocol>` | 是 | 传给 `ws-event-proxy` 的协议适配器配置。 |
 
-#### `proxy` 协议配置项
+#### 代理协议配置项（来自 `ws-event-proxy`）
 
-这些配置项来自 `ws-event-proxy`，在 `ws-client` 中会原样透传。
+这些配置项来自 `ws-event-proxy`，与 `reconnectTimeout`、`resolveEventType` 处于同一层级。
+WSClient 会在内部自动拆分并传给 `ws-event-proxy`。
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1242,10 +1239,10 @@ interface Protocol {
 ```ts
 const WSProtocol = {
   reconnectTimeout: 2000,
-  proxy: BaseProtocol,
   resolveEventType(name) {
     return { type: name }
-  }
+  },
+  ...BaseProtocol
 }
 ```
 
@@ -1484,10 +1481,8 @@ await client.send(msg, options)
 
 ```ts
 const protocol = {
-  proxy: {
-    getRequestId: (msg) => msg.id,
-    getResponseId: (msg) => msg.replyTo
-  }
+  getRequestId: (msg) => msg.id,
+  getResponseId: (msg) => msg.replyTo
 }
 const client = new WSClient(protocol)
 ```
@@ -1503,7 +1498,7 @@ const res = await client.request<Msg, Reply>(
 
 它同样支持和 `send()` 一样的局部发送中间件写法。
 
-注意：如果你的 `proxy` 协议无法从出站消息中提取请求 ID，`request()` 会直接抛错。
+注意：如果你的协议无法从出站消息中提取请求 ID，`request()` 会直接抛错。
 
 ---
 

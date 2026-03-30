@@ -3,18 +3,20 @@ import {
   type Protocol as ProxyProtocol
 } from 'ws-event-proxy'
 
-export interface Protocol {
+export interface WSProtocol extends Partial<ProxyProtocol> {
   reconnectTimeout: number;
-  proxy: Partial<ProxyProtocol>
-
   resolveEventType(name: string): Record<string, any>
+
+  /**
+   * Legacy nested proxy config (deprecated). Prefer flat proxy fields instead.
+   */
+  proxy?: Partial<ProxyProtocol>
 }
 
-export const WSProtocol: Protocol = {
+export const WSProtocol: WSProtocol = {
   reconnectTimeout: 2000,
-  proxy: BaseProtocol,
-
   resolveEventType(name) {
     return { type: name }
-  }
+  },
+  ...BaseProtocol,
 }

@@ -5,8 +5,7 @@ import {
   type Protocol as ProxyProtocol
 } from 'ws-event-proxy'
 import { 
-  WSProtocol, 
-  type Protocol
+  WSProtocol
 } from './protocol'
 import { 
   composeMiddleware, 
@@ -31,6 +30,19 @@ import type {
   WSSendContext
 } from '../types/middleware'
 
+const PROXY_PROTOCOL_KEYS = [
+  'needReady',
+  'logSend',
+  'logReceive',
+  'systemRoutes',
+  'buildRequest',
+  'getRequestId',
+  'getResponseId',
+  'isReadyEvent'
+] as const
+
+type ProxyProtocolKey = typeof PROXY_PROTOCOL_KEYS[number]
+
 export enum WSState {
   IDLE = 'IDLE',
   CONNECTING = 'CONNECTING',
@@ -54,7 +66,7 @@ export class WSClient<
   private _ws: WebSocket | null = null
   private _wsContext: WSContext<Events>
   private _wsProxy: WSProxy
-  private _wsProtocal: Protocol
+  private _wsProtocal: WSProtocol
   private _proxyProtocol: ProxyProtocol
 
   private _middlewares: Middleware<any, Events>[] = []
@@ -89,7 +101,7 @@ export class WSClient<
    * const wsc = new WSClient<Events>()
    * ```
    */
-  constructor(protocol?: Protocol) {
+  constructor(protocol?: WSProtocol) {
     this._wsContext = this._createContext()
     this._connected = this._createConnectPromise()
     this._wsProtocal = protocol || WSProtocol
@@ -98,10 +110,25 @@ export class WSClient<
     this._wsProxy = new WSProxy(this._proxyProtocol)
   }
 
-  private _buildProxyProtocal(protocol?: Protocol) {
+  private _pickProxyProtocol(protocol?: WSProtocol) {
+    const proxy: Partial<ProxyProtocol> = {}
+    if (!protocol) return proxy
+
+    PROXY_PROTOCOL_KEYS.forEach((key) => {
+      const value = (protocol as Record<ProxyProtocolKey, any>)[key]
+      if (value !== undefined) {
+        proxy[key] = value
+      }
+    })
+
+    return proxy
+  }
+
+  private _buildProxyProtocal(protocol?: WSProtocol) {
     return {
-      ...WSProtocol.proxy,
+      ...this._pickProxyProtocol(WSProtocol),
       ...(protocol?.proxy || {}),
+      ...this._pickProxyProtocol(protocol),
     }
   }
 
@@ -391,7 +418,7 @@ export class WSClient<
    */
   static takeover<Events extends AnyRecord = AnyRecord>(
     ws: WebSocket,
-    protocol?: Protocol
+    protocol?: WSProtocol
   ) {
     const instance = new WSClient<Events>(protocol)
     instance._ws = ws
